@@ -43,5 +43,3 @@ export const uploadResponse = async (files) => {
   };
 
 
-  
-module.exports = cloudinary;
