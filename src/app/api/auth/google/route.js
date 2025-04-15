@@ -7,23 +7,39 @@ import {
   successResponse,
 } from "@/middleware/response";
 import User from "@/models/user";
-// import { OAuth2Client } from "google-auth-library";
+import { OAuth2Client } from "google-auth-library";
 
-// const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const POST = async (req) => {
   try {
     await connectDB();
     const body = await req.json();
-    const { email,app=false } = body;
-    if (!email) {
-      return ResponseFailed("Email is required!");
+    const { app=false,googleToken } = body;
+    if (!googleToken) {
+      return ResponseFailed("token is required!");
     }
+
+        // Verify the Google token
+        const ticket = await client.verifyIdToken({
+          idToken: googleToken,
+          audience: process.env.GOOGLE_CLIENT_ID,
+        });
+    
+        const payload = ticket.getPayload();
+        // console.log(payload);
+
+        const email = payload?.email;
+        if (!email) {
+          return ResponseFailed("invailid Token!");
+        }
+
+        // console.log(payload);
 
 
     const user = await User.findOne({ email });
 
-if(!user) return ResponseFailed("User not found with this email", {isUser: false});
+if(!user) return ResponseFailed("User not found with this email", {goToRegistration: true});
 
     const jwtToken = signToken({ email: user.email });
 

@@ -27,7 +27,7 @@ export default function GoogleSignIn() {
             // Send the credential to your backend
 
             // setButtonLoading(true);
-            const data = await GoogleLoginUser({ email: decoded?.email });
+            const data = await GoogleLoginUser({ googleToken: credentialResponse.credential });
             // console.log(data);
             if (data.success) {
                 toast.success(data.message);
@@ -36,11 +36,11 @@ export default function GoogleSignIn() {
                 router.push('/')
             } else {
                 // console.log(data);
-                if (data?.data?.isUser) {
-                    toast.error(data.message);
-                } else {
+                if (data?.data?.goToRegistration) {
                     setGoogleData(decoded)
                     setShowDobModal(true);
+                } else {
+                    toast.error(data.message);
                 }
             }
         } catch (error) {
@@ -59,7 +59,9 @@ export default function GoogleSignIn() {
         e.preventDefault();
         // console.log(googleData, dob);
 
-        const data = await RegisterUser({ image: googleData?.picture, name: googleData?.name, email: googleData?.email, password: googleData?.email, dob: dob });
+        const password = googleData?.email.split('@')[0] + dob.split('-')[0];
+
+        const data = await RegisterUser({ image: googleData?.picture, name: googleData?.name, email: googleData?.email, password, dob: dob });
         console.log(data);
         if (data.success) {
             toast.success(data.message);

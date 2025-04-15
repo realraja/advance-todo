@@ -1,3 +1,9 @@
+import { UserIcon , HomeIcon,
+  ShoppingBagIcon,
+  QrCodeIcon,
+  CreditCardIcon,
+  UserCircleIcon,} from "@heroicons/react/24/outline";
+
 export const appName = "Todo App";
 
 export const appLogoImg =
@@ -6,6 +12,14 @@ export const userDefaultImg =
   "https://res.cloudinary.com/dwc3gwskl/image/upload/v1721379013/samples/ecommerce/fiiijyy4cq1nrcp7t4zz.jpg";
 
 export const siteNavigationArr = [
+  { name: "Home", href: "/", icon: HomeIcon },
+  { name: "Shop", href: "/shop", icon: ShoppingBagIcon },
+  { name: "Scan & Pay", href: "/scan", icon: QrCodeIcon },
+  { name: "Card", href: "/card", icon: CreditCardIcon },
+  { name: "Profile", href: "/profile", icon: UserIcon },
+];
+
+export const oldSiteNavigationArr = [
   {
     name: "Home",
     href: "/",
@@ -52,3 +66,7 @@ export const siteNavigationArr = [
     ),
   },
 ];
+
+
+
+export const UserIconCopm = () => (<UserIcon className="w-5 h-5" />)
