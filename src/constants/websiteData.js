@@ -7,7 +7,8 @@ import { UserIcon , HomeIcon,
 export const appName = "Todo App";
 
 export const appLogoImg =
-  "https://res.cloudinary.com/dwc3gwskl/image/upload/v1744642894/0/eoguwjjmo0174zlizro7.png";
+  // "https://res.cloudinary.com/dwc3gwskl/image/upload/v1744642894/0/eoguwjjmo0174zlizro7.png";
+  "eoguwjjmo0174zlizro7.png";
 export const userDefaultImg =
   "https://res.cloudinary.com/dwc3gwskl/image/upload/v1721379013/samples/ecommerce/fiiijyy4cq1nrcp7t4zz.jpg";
 

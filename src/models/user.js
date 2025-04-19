@@ -31,6 +31,7 @@ const schema = new Schema(
     running: [{ type: Date }],
     didThat: [{ type: Date }],
     bathed: [BathSchema], // Use a clean schema for subdocuments
+    importantEvents:[{name: String, date: Date}],
 
     // Tokens
     tokenWeb: { type: String },

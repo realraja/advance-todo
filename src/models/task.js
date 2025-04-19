@@ -11,7 +11,7 @@ const schema = new Schema(
       default: "task",
     },
     title: { type: String, required: true },
-    doTaskBefor:{type: Date},
+    doTaskOn:{type: Date},
     whenDoWork: {
       type: String,
       enum: [

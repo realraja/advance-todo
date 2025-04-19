@@ -42,7 +42,7 @@ export const GET = async (req, context) => {
     }
 
     if (user.tokenWeb !== cookie.value) {
-      cookies().set({
+      await cookies().set({
         name: "token",
         value: "",
         httpOnly: true,

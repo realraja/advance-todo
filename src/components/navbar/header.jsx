@@ -3,29 +3,16 @@
 import { appLogoImg, siteNavigationArr, userDefaultImg } from '@/constants/websiteData';
 import { logout } from '@/redux/slicer/auth';
 import { logoutUser } from '@/utils/authRequests';
-import {
-    Disclosure,
-    DisclosureButton,
-    DisclosurePanel,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuItems,Dialog, Transition
-} from '@headlessui/react';
-import { motion } from "framer-motion";
-
+import { Disclosure, Menu, MenuButton, MenuItem, MenuItems, Dialog, Transition } from '@headlessui/react';
+import { motion, AnimatePresence } from "framer-motion";
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState,Fragment, useRef } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { ClipLoader } from 'react-spinners';
-import {
-    BellIcon,
-    ArrowRightOnRectangleIcon,
-    ExclamationTriangleIcon,
-} from '@heroicons/react/24/outline';
-
+import { BellIcon, ArrowRightOnRectangleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import AddTaskWorkFormDialog from '../dialog/addTaskWorkDialog';
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -33,18 +20,17 @@ function classNames(...classes) {
 
 export default function Header() {
     const [mounted, setMounted] = useState(false);
-    // const router = useRouter();
-
     const { userData, isUser, loading } = useSelector((state) => state.auth);
-    // console.log(userData);
     const imgUrl = userData?.imgUrl || userDefaultImg;
 
     useEffect(() => {
         setMounted(true);
     }, []);
-    if (!mounted) return null; // Render nothing until mounted
+
+    if (!mounted) return <StartLoader />;
+
     return (
-        <Disclosure as="nav" className="bg-gray-900 shadow">
+        <Disclosure as="nav" className="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg sticky top-0 z-50 border-b border-gray-700/50">
             {({ open }) => (
                 <>
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -52,64 +38,34 @@ export default function Header() {
                             {/* Left logo and menu */}
                             <div className="flex sm:items-stretch sm:justify-start">
                                 {/* Logo */}
-                                <div className="flex flex-shrink-0 items-center cursor-pointer">
+                                <motion.div 
+                                    whileHover={{ scale: 1.05 }}
+                                    className="flex flex-shrink-0 items-center cursor-pointer"
+                                >
                                     <img
                                         className="h-16 w-auto"
                                         src={appLogoImg}
                                         alt="Your Company"
                                     />
-                                </div>
-
-                                {/* Desktop navigation */}
-                                {/* <div className="hidden sm:ml-6 sm:flex sm:space-x-4">
-                                    {navigation.map((item) => (
-                                        <a
-                                            key={item.name}
-                                            href={item.href}
-                                            className={classNames(
-                                                item.current
-                                                    ? 'bg-gray-800 text-white'
-                                                    : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                                'rounded-md px-3 py-2 text-sm font-medium'
-                                            )}
-                                            aria-current={item.current ? 'page' : undefined}
-                                        >
-                                            {item.name}
-                                        </a>
-                                    ))}
-                                </div> */}
+                                </motion.div>
 
                                 <DesktopNavigation />
                             </div>
 
                             {/* Right side - actions */}
                             {loading ? (
-                                <ClipLoader color="#2F77DE" size={45} speedMultiplier={1.5} />
-                            ) : isUser ? <RightSideImageButtonMenu imgUrl={imgUrl} name={userData?.name} email={userData?.email} /> : <LoginLink />}
+                                <ClipLoader color="#8B5CF6" size={45} speedMultiplier={1.5} />
+                            ) : isUser ? (
+                                <RightSideImageButtonMenu 
+                                    imgUrl={imgUrl} 
+                                    name={userData?.name} 
+                                    email={userData?.email} 
+                                />
+                            ) : (
+                                <LoginLink />
+                            )}
                         </div>
                     </div>
-
-                    {/* Mobile Menu */}
-                    {/* <DisclosurePanel className="sm:hidden">
-                        <div className="space-y-1 px-2 pt-2 pb-3">
-                            {navigation.map((item) => (
-                                <DisclosureButton
-                                    key={item.name}
-                                    as="a"
-                                    href={item.href}
-                                    className={classNames(
-                                        item.current
-                                            ? 'bg-gray-800 text-white'
-                                            : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                                        'block rounded-md px-3 py-2 text-base font-medium'
-                                    )}
-                                    aria-current={item.current ? 'page' : undefined}
-                                >
-                                    {item.name}
-                                </DisclosureButton>
-                            ))}
-                        </div>
-                    </DisclosurePanel> */}
                 </>
             )}
         </Disclosure>
@@ -120,6 +76,7 @@ const RightSideImageButtonMenu = ({ imgUrl, name = 'example', email = 'example@g
     const dispatch = useDispatch();
     const router = useRouter();
     const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const [showAddWorkDialog, setShowAddWorkDialog] = useState(false);
 
     const handleLogout = async () => {
         const data = await logoutUser({});
@@ -131,7 +88,7 @@ const RightSideImageButtonMenu = ({ imgUrl, name = 'example', email = 'example@g
             toast.error(data.message);
         }
     }
-    
+
     const copyEmailToClipboard = (email) => {
         navigator.clipboard.writeText(email).then(() => {
             toast.success("Email copied to clipboard!");
@@ -140,240 +97,293 @@ const RightSideImageButtonMenu = ({ imgUrl, name = 'example', email = 'example@g
         });
     };
 
-    return (<>
-        <div className="absolute inset-y-0 right-0 flex items-center gap-2 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {/* New Job Button */}
-            <button className="bg-indigo-500 hover:bg-indigo-600 text-white text-sm px-4 py-2 rounded-md font-medium cursor-pointer">
-                + New Job
-            </button>
+    return (
+        <>
+            <div className="absolute inset-y-0 right-0 flex items-center gap-3 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                {/* New Job Button */}
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowAddWorkDialog(true)}
+                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-sm px-4 py-2 rounded-lg font-medium cursor-pointer shadow-md shadow-purple-500/20 transition-all"
+                >
+                    + New Work
+                </motion.button>
 
-            {/* Notification Icon */}
-            <button
-                type="button"
-                className="relative cursor-pointer rounded-full bg-gray-900 p-1 text-gray-400 hover:text-white focus:outline-none"
-            >
-                <span className="sr-only">View notifications</span>
-                <BellIcon className="h-6 w-6" aria-hidden="true" />
-            </button>
+                {/* Notification Icon */}
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    type="button"
+                    className="relative cursor-pointer rounded-full bg-gray-800/50 p-1 text-gray-400 hover:text-white focus:outline-none border border-gray-700/50"
+                >
+                    <span className="sr-only">View notifications</span>
+                    <BellIcon className="h-6 w-6" aria-hidden="true" />
+                    <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                </motion.button>
 
-            {/* Profile dropdown */}
-            <Menu as="div" className="relative ml-3">
-                <div>
-                    <MenuButton className="flex rounded-full bg-gray-900 cursor-pointer text-sm focus:outline-none">
-                        <span className="sr-only">Open user menu</span>
-                        <img                        
-                            className="h-8 w-8 rounded-full"
-                            src={imgUrl}
-                            alt=""
-                        />
-                    </MenuButton>
-                </div>
-                <MenuItems className="absolute right-0 z-20 mt-2 w-64 rounded-xl bg-[#1F1B2E] text-white shadow-lg ring-1 ring-black/10 focus:outline-none p-4 space-y-2">
-
-                    {/* Profile Header */}
-                    <div className="flex items-center gap-3 border-b border-white/10 pb-4 mb-2">
-                        <img
-                        onClick={() => router.push('/profile')}
-                            className="h-12 w-12 rounded-full border cursor-pointer border-white/20"
-                            src={imgUrl}
-                            alt="User avatar"
-                        />
-                        <div onClick={() => copyEmailToClipboard(email)} className="cursor-copy">
-                            <p className="font-semibold text-sm">{name}</p>
-                            <p className="text-xs text-gray-400">{email}</p>
-                        </div>
+                {/* Profile dropdown */}
+                <Menu as="div" className="relative ml-3">
+                    <div>
+                        <MenuButton className="flex rounded-full bg-gray-800/50 cursor-pointer text-sm focus:outline-none border border-gray-700/50">
+                            <span className="sr-only">Open user menu</span>
+                            <motion.img
+                                whileHover={{ scale: 1.1 }}
+                                className="h-8 w-8 rounded-full"
+                                src={imgUrl}
+                                alt=""
+                            />
+                        </MenuButton>
                     </div>
+                    <MenuItems 
+                        as={motion.div}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute right-0 z-20 mt-2 w-64 rounded-xl bg-gray-800/90 backdrop-blur-lg text-white shadow-xl ring-1 ring-gray-700/50 focus:outline-none p-4 space-y-2 border border-gray-700/50"
+                    >
+                        {/* Profile Header */}
+                        <motion.div 
+                            className="flex items-center gap-3 border-b border-white/10 pb-4 mb-2"
+                            initial={{ x: -10, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <motion.img
+                                whileHover={{ scale: 1.05 }}
+                                onClick={() => router.push('/profile')}
+                                className="h-12 w-12 rounded-full border cursor-pointer border-purple-500/30"
+                                src={imgUrl}
+                                alt="User avatar"
+                            />
+                            <motion.div 
+                                whileHover={{ scale: 1.02 }}
+                                onClick={() => copyEmailToClipboard(email)} 
+                                className="cursor-copy"
+                                initial={{ x: -5, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                <p className="font-semibold text-sm text-white">{name}</p>
+                                <p className="text-xs text-gray-400 truncate">{email}</p>
+                            </motion.div>
+                        </motion.div>
 
-                    {/* Menu Items */}
-
-                    {
-                        siteNavigationArr.map(({href,icon:Icon,name}, index) => (
+                        {/* Menu Items */}
+                        {siteNavigationArr.map(({ href, icon: Icon, name }, index) => (
                             <MenuItem key={index}>
                                 {({ active }) => (
                                     <Link
                                         href={href}
-                                        className={`flex items-center gap-2 px-3 py-2 text-sm rounded-md ${active ? 'bg-white/10' : ''
-                                            }`}
+                                        className={`flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition-all ${
+                                            active ? 'bg-gray-700/50 text-purple-300' : 'text-gray-300 hover:bg-gray-700/30'
+                                        }`}
                                     >
                                         <Icon className="w-5 h-5" />
                                         {name}
                                     </Link>
                                 )}
                             </MenuItem>
-                        ))
-                    }
+                        ))}
 
-
-
-
-                    {/* Sign Out */}
-                    <MenuItem>
-                        {({ active }) => (
-                            <button
-                                onClick={()=> setShowLogoutDialog(true)}
-                                className={`flex cursor-pointer items-center gap-2 w-full px-3 py-2 text-sm rounded-md justify-center mt-3 font-semibold text-red-500 bg-red-500/10 hover:bg-red-500/20`}
-                            >
-                                <ArrowRightOnRectangleIcon className="w-5 h-5" />
-                                Sign out
-                            </button>
-                        )}
-                    </MenuItem>
-                </MenuItems>
-
-            </Menu>
-        </div>
-        <LogoutConfirmButton show={showLogoutDialog} setShow={setShowLogoutDialog} buttonText={'LogOut'} runFunction={handleLogout} />
-        </>
-    )
-}
-
-
-const LogoutConfirmButton = ({ show, setShow, buttonText, runFunction,description='This action is irreversible and you will permanently Log out' }) => {
-    const cancelRef = useRef(null);
-  
-    return (
-      <Transition.Root show={show} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-50"
-          initialFocus={cancelRef}
-          onClose={() => setShow(false)}
-        >
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <motion.div 
-              className="fixed inset-0 bg-black/80 backdrop-blur-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+                        {/* Sign Out */}
+                        <MenuItem>
+                            {({ active }) => (
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    onClick={() => setShowLogoutDialog(true)}
+                                    className={`flex cursor-pointer items-center gap-3 w-full px-3 py-2 text-sm rounded-lg justify-center mt-3 font-semibold ${
+                                        active ? 'bg-red-500/20' : 'bg-red-500/10 hover:bg-red-500/20'
+                                    } text-red-400 transition-all`}
+                                >
+                                    <ArrowRightOnRectangleIcon className="w-5 h-5" />
+                                    Sign out
+                                </motion.button>
+                            )}
+                        </MenuItem>
+                    </MenuItems>
+                </Menu>
+            </div>
+            
+            <LogoutConfirmButton 
+                show={showLogoutDialog} 
+                setShow={setShowLogoutDialog} 
+                buttonText={'LogOut'} 
+                runFunction={handleLogout} 
             />
-          </Transition.Child>
-  
-          <div className="fixed inset-0 flex items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-90"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-90"
-            >
-              <Dialog.Panel as={motion.div}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 20, opacity: 0 }}
-                className="w-full max-w-md rounded-xl bg-gray-900 p-6 shadow-2xl border border-gray-800"
-              >
-                <motion.div 
-                  className="flex items-center space-x-4"
-                  initial={{ x: -10 }}
-                  animate={{ x: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <motion.div 
-                    className="flex h-12 w-12 items-center justify-center rounded-full bg-red-900/30"
-                    animate={{ 
-                      rotate: [0, 5, -5, 0],
-                      scale: [1, 1.1, 1]
-                    }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <ExclamationTriangleIcon className="h-6 w-6 text-red-400" />
-                  </motion.div>
-                  <Dialog.Title className="text-lg font-semibold text-gray-100">
-                    Are you sure?
-                  </Dialog.Title>
-                </motion.div>
-  
-                <motion.p 
-                  className="mt-3 text-sm text-gray-400"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  {description}
-                </motion.p>
-  
-                <div className="mt-6 flex justify-end space-x-3">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-700 border border-gray-700"
-                    onClick={() => setShow(false)}
-                    ref={cancelRef}
-                  >
-                    Cancel
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ 
-                      scale: 1.05,
-                      backgroundColor: "#ef4444" // red-500
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    className="rounded-lg cursor-pointer bg-red-600 px-4 py-2 text-sm font-semibold text-white"
-                    onClick={() => {
-                      setShow(false);
-                      runFunction();
-                    }}
-                  >
-                    {buttonText}
-                  </motion.button>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition.Root>
+            <AddTaskWorkFormDialog 
+                show={showAddWorkDialog} 
+                setShow={setShowAddWorkDialog} 
+                title={'Add Work'} 
+                showTitle={true} 
+                showImage={true} 
+                showDate={false} 
+                showDay={true} 
+            />
+        </>
     );
-  };
+};
+
+const LogoutConfirmButton = ({ show, setShow, buttonText, runFunction, description = 'This action is irreversible and you will permanently Log out' }) => {
+    const cancelRef = useRef(null);
+
+    return (
+        <Transition.Root show={show} as={Fragment}>
+            <Dialog
+                as="div"
+                className="relative z-50"
+                initialFocus={cancelRef}
+                onClose={() => setShow(false)}
+            >
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <motion.div
+                        className="fixed inset-0 bg-gradient-to-br from-black/90 to-purple-900/20 backdrop-blur-sm"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    />
+                </Transition.Child>
+
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0 scale-90"
+                        enterTo="opacity-100 scale-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100 scale-100"
+                        leaveTo="opacity-0 scale-90"
+                    >
+                        <Dialog.Panel as={motion.div}
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 20, opacity: 0 }}
+                            className="w-full max-w-md rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-6 shadow-xl shadow-purple-500/10 border border-gray-700/50"
+                        >
+                            <motion.div
+                                className="flex items-center space-x-4"
+                                initial={{ x: -10 }}
+                                animate={{ x: 0 }}
+                                transition={{ delay: 0.1 }}
+                            >
+                                <motion.div
+                                    className="flex h-12 w-12 items-center justify-center rounded-full bg-red-900/30"
+                                    animate={{
+                                        rotate: [0, 5, -5, 0],
+                                        scale: [1, 1.1, 1]
+                                    }}
+                                    transition={{ duration: 0.6 }}
+                                >
+                                    <ExclamationTriangleIcon className="h-6 w-6 text-red-400" />
+                                </motion.div>
+                                <Dialog.Title className="text-lg font-semibold text-white">
+                                    Are you sure?
+                                </Dialog.Title>
+                            </motion.div>
+
+                            <motion.p
+                                className="mt-3 text-sm text-gray-400"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                {description}
+                            </motion.p>
+
+                            <div className="mt-6 flex justify-end space-x-3">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="rounded-lg bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-200 hover:bg-gray-700/50 border border-gray-700 transition"
+                                    onClick={() => setShow(false)}
+                                    ref={cancelRef}
+                                >
+                                    Cancel
+                                </motion.button>
+                                <motion.button
+                                    whileHover={{
+                                        scale: 1.05,
+                                        backgroundColor: "#ef4444" // red-500
+                                    }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="rounded-lg cursor-pointer bg-gradient-to-r from-red-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-red-500/20"
+                                    onClick={() => {
+                                        setShow(false);
+                                        runFunction();
+                                    }}
+                                >
+                                    {buttonText}
+                                </motion.button>
+                            </div>
+                        </Dialog.Panel>
+                    </Transition.Child>
+                </div>
+            </Dialog>
+        </Transition.Root>
+    );
+};
 
 const DesktopNavigation = () => {
     const pathname = usePathname();
 
     return (
-        <div className="max-sm:hidden flex justify-center items-center gap-3 ml-5">
+        <div className="max-sm:hidden flex justify-center items-center gap-1 ml-5">
             {siteNavigationArr.map((item, index) => (
                 <Link
                     key={index}
                     href={item.href}
-                    className={`px-5 py-2 rounded-md ${pathname === item.href
-                        ? "bg-gray-950  text-purple-300"
-                        : "hover:bg-gray-800"
-                        }`}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                        pathname === item.href
+                            ? "bg-gray-800/50 text-purple-300 shadow-inner"
+                            : "text-gray-300 hover:bg-gray-800/30 hover:text-white"
+                    }`}
                 >
-                    <p>{item.name}</p>
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        className="flex items-center gap-2"
+                    >
+                        <item.icon className="w-5 h-5" />
+                        {item.name}
+                    </motion.div>
                 </Link>
             ))}
-
         </div>
-    )
-}
+    );
+};
 
-const LoginLink = () => (<Link
-    href={"/login"}
-    className="text-purple-500 flex justify-center items-center gap-2"
->
-    Login
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="size-6"
-    >
-        <path
-            fillRule="evenodd"
-            d="M16.72 7.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1 0 1.06l-3.75 3.75a.75.75 0 1 1-1.06-1.06l2.47-2.47H3a.75.75 0 0 1 0-1.5h16.19l-2.47-2.47a.75.75 0 0 1 0-1.06Z"
-            clipRule="evenodd"
-        />
-    </svg>
-</Link>)
+const LoginLink = () => (
+    <motion.div whileHover={{ scale: 1.05 }}>
+        <Link
+            href={"/login"}
+            className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md shadow-purple-500/20 transition-all hover:from-purple-500 hover:to-indigo-500"
+        >
+            Login
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="size-5"
+            >
+                <path
+                    fillRule="evenodd"
+                    d="M16.72 7.72a.75.75 0 0 1 1.06 0l3.75 3.75a.75.75 0 0 1 0 1.06l-3.75 3.75a.75.75 0 1 1-1.06-1.06l2.47-2.47H3a.75.75 0 0 1 0-1.5h16.19l-2.47-2.47a.75.75 0 0 1 0-1.06Z"
+                    clipRule="evenodd"
+                />
+            </svg>
+        </Link>
+    </motion.div>
+);
 
-
+const StartLoader = () => (
+    <div className="bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg sticky top-0 z-50 border-b border-gray-700/50 flex justify-between items-center px-6 h-16">
+        <div className="bg-gray-800/50 animate-pulse rounded-lg h-10 w-32"></div>
+        <div className="bg-gray-800/50 animate-pulse size-10 rounded-full"></div>
+    </div>
+);
