@@ -2,7 +2,7 @@
 import { TaskPage } from "@/components/workAndTask/taskPage";
 import { WorkPage } from "@/components/workAndTask/workPage";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
   ArrowRight, LayoutGrid, List, CalendarDays, CheckCircle, Clock, 
@@ -15,9 +15,17 @@ import { appLogoImg } from "@/constants/websiteData";
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState("work");
-  const {isUser} = useSelector((state) => state.auth);
+const [mute, setMute] = useState(false);
 
-  if (!isUser) return <><OldNotLoginPage /> <NotLoginPage /></> ;
+useEffect(() => {
+setMute(true);
+}, [])
+
+  const {isUser} = useSelector((state) => state.auth);
+  // if(!mute) return;
+
+  if (!isUser || !mute) return <><OldNotLoginPage /> <NotLoginPage /></> ;
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4 md:p-8">

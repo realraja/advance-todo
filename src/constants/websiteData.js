@@ -3,6 +3,7 @@ import { UserIcon , HomeIcon,
   QrCodeIcon,
   CreditCardIcon,
   UserCircleIcon,} from "@heroicons/react/24/outline";
+import { Calendar, KeyIcon, Notebook } from "lucide-react";
 
 export const appName = "Todo App";
 
@@ -13,6 +14,14 @@ export const userDefaultImg =
   "https://res.cloudinary.com/dwc3gwskl/image/upload/v1721379013/samples/ecommerce/fiiijyy4cq1nrcp7t4zz.jpg";
 
 export const siteNavigationArr = [
+  { name: "Home", href: "/", icon: HomeIcon },
+  { name: "Notes", href: "/notes", icon: Notebook },
+  { name: "Calendar", href: "/calendar", icon: Calendar },
+  { name: "Password", href: "/password", icon: KeyIcon },
+  { name: "Profile", href: "/profile", icon: UserIcon },
+];
+
+export const OldsiteNavigationArr = [
   { name: "Home", href: "/", icon: HomeIcon },
   { name: "Shop", href: "/shop", icon: ShoppingBagIcon },
   { name: "Scan & Pay", href: "/scan", icon: QrCodeIcon },

@@ -1,6 +1,6 @@
 "use client";
 import { useAddWorkMutation, useGetWorkQuery, useToggleCompleteWorkMutation } from "@/redux/api/work";
-import { Edit, Info, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { Edit, Info, ChevronDown, ChevronUp, ExternalLink, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import UpdateTaskWorkFormDialog from "../dialog/updateTaskWork";
@@ -34,14 +34,7 @@ export const WorkPage = () => {
         }
     }, [data, workData]);
 
-    const handleAdd = async (e) => {
-        e.preventDefault();
-        if (!title.trim()) return;
-        const res = await CreateWork({ title, whenDoWork: 'anytime' });
-        if (res.data) {
-            setTitle('');
-        }
-    };
+
 
     const handleToggleCompletion = async (id) => {
         setWorkArray((prev) => {
@@ -116,7 +109,7 @@ export const WorkPage = () => {
             transition={{ duration: 0.5 }}
             className="p-4 max-sm:mx-2 my-2 max-w-3xl mx-auto bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-purple-500/30 rounded-xl shadow-lg shadow-purple-500/10"
         >
-            <form onSubmit={handleAdd} className="flex gap-3 mb-6 justify-around">
+            {/* <form onSubmit={handleAdd} className="flex gap-3 mb-6 justify-around">
                 <motion.input
                     whileFocus={{ scale: 1.02 }}
                     value={title}
@@ -134,7 +127,9 @@ export const WorkPage = () => {
                 >
                     Add
                 </motion.button>
-            </form>
+            </form> */}
+
+            <WorkForm handleAdd={CreateWork} />
 
             {isLoading && <WorkLoader />}
 
@@ -256,6 +251,134 @@ export const WorkPage = () => {
         </motion.div>
     );
 };
+
+const WorkForm = ({ handleAdd }) => {
+    const [isDayOpen, setIsDayOpen] = useState(false);
+    const [title, setTitle] = useState("");
+    const days = ["anytime","sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    const [selectedDay, setSelectedDay] = useState("anytime");
+  
+    const handleSubmit = async(e) => {
+        e.preventDefault();
+        if (!title.trim()) return;
+        const res = await handleAdd({ title, whenDoWork:selectedDay? selectedDay: 'anytime' });
+        if (res.data) {
+            setTitle('');
+        }
+    };
+  
+    const getDayDisplay = (day) => {
+      if (day === "anytime") return <span className="max-sm:hidden">Anytime</span>;
+      return day === "anytime" ? "Any" : day.slice(0,3);
+    };
+  
+    const getDayColor = (day) => {
+      const colors = {
+        sunday: 'bg-red-500/20 text-red-400',
+        monday: 'bg-blue-500/20 text-blue-400',
+        tuesday: 'bg-purple-500/20 text-purple-400',
+        wednesday: 'bg-green-500/20 text-green-400',
+        thursday: 'bg-yellow-500/20 text-yellow-400',
+        friday: 'bg-indigo-500/20 text-indigo-400',
+        saturday: 'bg-pink-500/20 text-pink-400',
+        anytime: 'bg-gray-600/20 text-gray-300'
+      };
+      return colors[day] || colors.anytime;
+    };
+  
+    return (
+      <motion.form 
+        onSubmit={handleSubmit}
+        className="flex gap-2 w-full items-stretch mb-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Text Input */}
+        <motion.div 
+          className="relative flex-1"
+          whileFocus={{ scale: 1.01 }}
+        >
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            type="text"
+            placeholder="Add task..."
+            className="w-full bg-gray-800/70 text-white placeholder-gray-400 outline-none rounded-lg px-4 py-2 transition-all duration-200 border border-gray-700 focus:border-purple-500"
+          />
+          <AnimatePresence>
+            {title && (
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                className="absolute right-2 top-1/2 -translate-y-1/2"
+              >
+                <Plus className="size-4 text-purple-400" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+  
+        {/* Day Selector */}
+        <div className="relative">
+          <motion.button
+            type="button"
+            onClick={() => setIsDayOpen(!isDayOpen)}
+            whileTap={{ scale: 0.95 }}
+            className={`h-full px-3 py-2 rounded-lg border flex items-center ${getDayColor(selectedDay)} border-transparent`}
+          >
+            <span className="text-xs">{getDayDisplay(selectedDay)}</span>
+            <motion.div
+              animate={{ rotate: isDayOpen ? 180 : 0 }}
+              className="ml-1"
+            >
+              <ChevronDown className="size-3" />
+            </motion.div>
+          </motion.button>
+  
+          <AnimatePresence>
+            {isDayOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute z-10 right-0 mt-1 w-28 bg-gray-800 border border-gray-700 rounded-lg shadow-lg overflow-hidden"
+              >
+                {days.map(day => (
+                  <motion.button
+                    key={day}
+                    type="button"
+                    whileHover={{ backgroundColor: "rgba(55, 65, 81, 0.5)" }}
+                    onClick={() => {
+                      setSelectedDay(day);
+                      setIsDayOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-1.5 text-xs flex items-center ${getDayColor(day)} ${selectedDay === day ? 'ring-1 ring-purple-400' : ''}`}
+                  >
+                    {day === "anytime" ? "Anytime" : day.slice(0,3)}
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+  
+        {/* Submit Button */}
+        <motion.button
+          type="submit"
+          disabled={!title.trim()}
+          whileHover={{ scale: title.trim() ? 1.05 : 1 }}
+          whileTap={{ scale: 0.95 }}
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${title.trim() 
+            ? 'bg-purple-600 text-white' 
+            : 'bg-gray-700 text-gray-400 cursor-not-allowed'}`}
+        >
+          <Plus className="size-4" />
+        </motion.button>
+      </motion.form>
+    );
+  };
 
 // ... (keep the existing getDayColor, StartLoader, and WorkLoader components)
 const getDayColor = (day, isToday = false, isTomorrow = false) => {

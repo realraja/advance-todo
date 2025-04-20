@@ -12,6 +12,13 @@ const taskApi = createApi({
             }),
             providesTags: ['Task'],
         }),
+        getAllTask: builder.query({
+            query: () => ({
+                url: 'task/get-all-task',
+                credentials: 'include',
+            }),
+            providesTags: ['Task'],
+        }),
         addTask: builder.mutation({
             query: (data) => ({
                 url: 'task/create',
@@ -51,6 +58,7 @@ const taskApi = createApi({
 
 export const {
     useGetTaskQuery,
+    useGetAllTaskQuery,
     useAddTaskMutation,
     useUpdateTaskMutation,
     useToggleCompleteTaskMutation,

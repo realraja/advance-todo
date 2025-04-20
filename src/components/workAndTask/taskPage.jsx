@@ -47,7 +47,7 @@ export const TaskPage = () => {
     };
 
     const handleShowAll = () => {
-        router.push('/all-tasks');
+        router.push('/tasks');
     };
 
 
