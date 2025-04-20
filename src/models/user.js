@@ -36,10 +36,7 @@ const schema = new Schema(
     // Tokens
     tokenWeb: { type: String },
     tokenApp: { type: String },
-
-    // OTP
-    email_otp: Number,
-    email_otp_expiry: Date,
+    passwordResetToken: { type: String },
 
     createdAt: { type: Date, default: Date.now },
   },
