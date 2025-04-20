@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 
 export const sendMail = async (email, token) => {
     try {
-        const url = process.env.URL;
+        const url = process.env.URL_SEND;
       const link = `${url}/reset-password?token=${token}`;
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
