@@ -8,7 +8,7 @@ import { Plus, Edit, Calendar, Film, Tv, Check, Clock, Play, Star, StarHalf } fr
 // import EditMovieDialog from '@/components/dialog/editMovieDialog';
 import classNames from 'classnames';
 
-function Page() {
+function MoviePage() {
     const [showAddMovie, setShowAddMovie] = useState(false);
     const [showAddWatchDate, setShowAddWatchDate] = useState(false);
     const [showEditMovie, setShowEditMovie] = useState(false);
@@ -77,7 +77,7 @@ function Page() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
+        <div className="p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <motion.div 
@@ -265,4 +265,4 @@ function Page() {
     );
 }
 
-export default Page;
+export default MoviePage;

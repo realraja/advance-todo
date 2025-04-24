@@ -18,15 +18,21 @@ import {
   Edit,
   ChevronDown,
   Calendar,
+  ExternalLink,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { appLogoImg } from "@/constants/websiteData";
 import { GoalPage } from "@/components/goal/goal";
+import FolderManager from "./image/page";
+import MoviePage from "./movie/page";
+import SkillsPage from "./skill/page";
 // import { GoalPage } from "@/components/goal/goal";
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState("work");
   const [mute, setMute] = useState(false);
+
+  const route = useRouter();
 
   useEffect(() => {
     setMute(true);
@@ -104,7 +110,18 @@ const Page = () => {
       </motion.main>
 
 
+<div className="my-8 border border-gray-300 border-dotted"></div>
 <GoalTabs />
+<GotoButton handleGoto={()=> route.push('/goals')} pageName={'Goals'} />
+<div className="my-8 border border-gray-300 border-dotted"></div>
+<FolderManager />
+<GotoButton handleGoto={()=> route.push('/image')} pageName={'Folders'} />
+<div className="my-8 border border-gray-300 border-dotted"></div>
+<MoviePage />
+<GotoButton handleGoto={()=> route.push('/movie')} pageName={'Movies'} />
+<div className="my-8 border border-gray-300 border-dotted"></div>
+<SkillsPage />
+<GotoButton handleGoto={()=> route.push('/skill')} pageName={'Skills'} />
       {/* Animated Footer */}
       <motion.footer
         initial={{ opacity: 0 }}
@@ -121,6 +138,19 @@ const Page = () => {
 };
 
 export default Page;
+
+const GotoButton = ({handleGoto,pageName}) => <motion.button
+initial={{ opacity: 0, x: 20 }}
+animate={{ opacity: 1, x: 0 }}
+exit={{ opacity: 0, x: 20 }}
+whileHover={{ scale: 1.05 }}
+whileTap={{ scale: 0.95 }}
+onClick={handleGoto}
+className="flex items-center m-auto cursor-pointer gap-2 px-4 py-2 rounded-xl bg-purple-600/20 text-purple-300 hover:text-white border border-purple-500/30 transition-all"
+>
+<ExternalLink className="size-5" />
+Go To {pageName} Page
+</motion.button>
 
 const GoalTabs = ({}) => {
   const [activeTab, setActiveTab] = useState("weekly");

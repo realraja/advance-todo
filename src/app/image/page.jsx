@@ -70,7 +70,7 @@ const FolderManager = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 sm:p-6 text-white relative">
+    <div className=" p-4 sm:p-6 text-white relative">
       {/* Top Bar */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
