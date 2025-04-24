@@ -20,26 +20,66 @@ cloudinary.config({
 // }
 
 export const uploadResponse = async (files) => {
-    try {
-      if (!Array.isArray(files)) {
-        throw new Error("Expected an array of files.");
-      }
-  
-      const uploadPromises = files.map((file) =>
-        cloudinary.uploader.upload(file, {
-          folder: folderName,
-        })
-      );
-  
-      const uploadResults = await Promise.all(uploadPromises);
-  
-      // Return array of uploaded file URLs or full metadata
-      return uploadResults.map(result => result.secure_url);
-      
-    } catch (error) {
-      console.error('Upload error:', error);
-      throw new Error("File upload failed. " + error.message);
+  try {
+    if (!Array.isArray(files)) {
+      throw new Error("Expected an array of files.");
     }
-  };
 
+    const uploadPromises = files.map((file) =>
+      cloudinary.uploader.upload(file, {
+        folder: folderName,
+        resource_type: "auto", // Support any file type
+      })
+    );
 
+    const uploadResults = await Promise.all(uploadPromises);
+
+    // Return array of uploaded file URLs or full metadata
+    return uploadResults.map(result => result.secure_url);
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    throw new Error("File upload failed. " + error.message);
+  }
+};
+
+export const uploadFileResponse = async (files) => {
+  try {
+    if (!files) {
+      throw new Error("No files provided for upload.");
+    }
+
+    // Convert single file to array for consistent processing
+    const filesArray = Array.isArray(files) ? files : [files];
+
+    if (filesArray.length === 0) {
+      throw new Error("At least one file must be provided.");
+    }
+
+    const uploadPromises = filesArray.map((file) => {
+      // Validate the file object
+      if (!file) {
+        throw new Error("Invalid file provided.");
+      }
+
+      // For Cloudinary, you might need to handle different file types differently
+      // If the file is a path (string), Cloudinary can handle it directly
+      // If it's a Buffer or Stream, you might need to adjust the upload options
+      const uploadOptions = {
+        folder: folderName,
+        resource_type: 'auto', // Let Cloudinary detect the file type automatically
+      };
+
+      return cloudinary.uploader.upload(file, uploadOptions);
+    });
+
+    const uploadResults = await Promise.all(uploadPromises);
+
+    // Return array of uploaded file information (URL and other metadata)
+    return uploadResults.map(result => (result.secure_url));
+    
+  } catch (error) {
+    console.error('Upload error:', error);
+    throw new Error(`File upload failed: ${error.message}`);
+  }
+};

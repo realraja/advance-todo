@@ -16,7 +16,7 @@ export async function POST(req) {
       return failedResponse("Email and Token are required");
     }
 
-    const {email} = verifyToken(token);
+    const {email,checkToken} = verifyToken(token);
 
 
 
@@ -26,7 +26,7 @@ export async function POST(req) {
     }
 
 // console.log(token,user.passwordResetToken)
-    if (token !== user.passwordResetToken) {
+    if (checkToken !== user.passwordResetToken) {
       return failedResponse("Invalid token",null, 401);
     }
 

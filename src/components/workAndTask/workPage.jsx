@@ -107,7 +107,7 @@ export const WorkPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="p-4 max-sm:mx-2 my-2 max-w-3xl mx-auto bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-purple-500/30 rounded-xl shadow-lg shadow-purple-500/10"
+            className="p-4 max-sm:mx-2 my-2 max-w-3xl mx-auto bg-gradient-to-br from-gray-900/20 to-gray-800/20 border-2 border-purple-500/30 rounded-xl shadow-lg shadow-purple-500/10"
         >
             {/* <form onSubmit={handleAdd} className="flex gap-3 mb-6 justify-around">
                 <motion.input

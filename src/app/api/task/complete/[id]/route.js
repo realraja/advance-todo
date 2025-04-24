@@ -19,6 +19,7 @@ export const PUT = userTryCatch(async (req, context) => {
     if (!task) return failedResponse('task not found');
   
     task.completed = !task.completed;
+    task.completedAt = task.completed? new Date() :null
     await task.save();
   
     return successResponse('task deleted toggle successfully', { task });

@@ -32,7 +32,7 @@ export async function POST(req) {
     }
 
 
-    user.passwordResetToken = passwordResetToken;
+    user.passwordResetToken = resetToken;
     await user.save();
 
     const res = successResponse("Password Link Sent On "+ email, user);

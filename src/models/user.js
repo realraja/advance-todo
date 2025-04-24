@@ -1,17 +1,5 @@
 const { Schema, default: mongoose } = require("mongoose");
 
-const BathSchema = new Schema(
-  {
-    type: {
-      type: String,
-      required: true,
-      enum: ["normal", "hot"],
-      default: "normal",
-    },
-    createdAt: { type: Date, default: Date.now },
-  },
-  { _id: false } // Prevent creating _id for subdocuments
-);
 
 const schema = new Schema(
   {
@@ -27,16 +15,18 @@ const schema = new Schema(
     dob: { type: Date, required: true },
 
     // Track logs (no select: false on array directly)
-    brushed: [{ type: Date }],
-    running: [{ type: Date }],
-    didThat: [{ type: Date }],
-    bathed: [BathSchema], // Use a clean schema for subdocuments
+    brushed:  { type: [Date], select: false },
+    running:  { type: [Date], select: false },
+    didThat:  { type: [Date], select: false },
+    bathed:  { type: [Date], select: false }, // Use a clean schema for subdocuments
     importantEvents:[{name: String, date: Date}],
+    notification: [{message:String,date:{type:Date,default:Date.now}}],
 
     // Tokens
     tokenWeb: { type: String },
     tokenApp: { type: String },
     passwordResetToken: { type: String },
+    passwordResetTokenExp: { type: String },
 
     createdAt: { type: Date, default: Date.now },
   },

@@ -7,13 +7,17 @@ export const PUT = userTryCatch(async (req) => {
   if (!id) return failedResponse('Please provide id');
   if (typeof completed === 'undefined') return failedResponse('Please provide completed');
 
-  const work = await Task.findOneAndUpdate(
-    { _id: id, user: req.user._id, type: 'work' },
-    { completed, completedAt: completed ? new Date() : null },
-    { new: true }
+  const work = await Task.findOne(
+    { _id: id, user: req.user._id, type: 'work' }
   );
-
+  // { completed, completedAt: completed ? new Date() : null }, // update object
   if (!work) return failedResponse('work not found');
+
+  console.log(completed,new Date());
+  work.completed = completed;
+  work.completedAt = completed? new Date() :null
+  await work.save()
+
 
   return successResponse('work updated successfully', { work });
 });
