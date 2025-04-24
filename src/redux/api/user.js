@@ -5,6 +5,13 @@ const userApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "/api/user" }),
   tagTypes: ["User"],
   endpoints: (builder) => ({
+    getUserData: builder.query({
+      query: () => ({
+        url: "/user-data",
+        credentials: "include",
+      }),
+      providesTags: ["User"],
+    }),
     getBath: builder.query({
       query: () => ({
         url: "/bath",
@@ -85,6 +92,33 @@ const userApi = createApi({
       }),
       invalidatesTags: ["User"],
     }),
+    updateImportantEvent: builder.mutation({
+      query: (data) => ({
+        url: "/important-event",
+        method: "PUT",
+        credentials: "include",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    deleteImportantEvent: builder.mutation({
+      query: (data) => ({
+        url: "/important-event",
+        method: "DELETE",
+        credentials: "include",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
+    updateProfile: builder.mutation({
+      query: (data) => ({
+        url: "/update-profile",
+        method: "PUT",
+        credentials: "include",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -99,5 +133,9 @@ export const {
   useAddDidThatMutation,
   useAddImportantEventMutation,
   useAddRunMutation,
+  useUpdateProfileMutation,
+  useGetUserDataQuery,
+  useUpdateImportantEventMutation,
+  useDeleteImportantEventMutation
 } = userApi;
 export default userApi;

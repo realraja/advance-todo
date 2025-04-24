@@ -5,15 +5,15 @@ import User from "@/models/user";
 
  
 export const GET = userTryCatch(async(req) =>{
-    const bath = await User.findById(req.user._id).sort({bathed:-1});
+    const bath = await User.findById(req.user._id).select("+bathed").sort({bathed:-1});
     return successResponse('bath fetch successfully',{bath:bath.bathed});
 })
 
 export const POST = userTryCatch(async(req) =>{
-    const bath = await User.findById(req.user._id);
+    const bath = await User.findById(req.user._id).select("+bathed");
     bath.bathed.push(new Date());
     await bath.save()
-    return successResponse('bath fetch successfully',{bath:bath.bathed});
+    return successResponse('bath added successfully',{bath:bath.bathed});
 })
 
 

@@ -1,4 +1,29 @@
-
+export function getTimeDifferenceFromToday(inputDateStr) {
+    const inputDate = new Date(inputDateStr);
+    const today = new Date();
+  
+    // Set time to 0 for accurate comparison
+    inputDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+  
+    let years = today.getFullYear() - inputDate.getFullYear();
+    let months = today.getMonth() - inputDate.getMonth();
+    let days = today.getDate() - inputDate.getDate();
+  
+    if (days < 0) {
+      // Borrow days from previous month
+      months--;
+      const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+      days += prevMonth.getDate();
+    }
+  
+    if (months < 0) {
+      months += 12;
+      years--;
+    }
+  
+    return { years, months, days };
+  }
 
 export const formatDateDisplay = (dateString) => {
     if (!dateString) return { 

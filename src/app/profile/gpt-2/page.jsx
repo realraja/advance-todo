@@ -10,21 +10,10 @@ import {
   User2,
   Mail,
   Calendar,
-  ChevronRight,
-  Award,
-  Droplet,
-  Activity,
-  HeartPulse,
-  CheckCircle
+  ChevronRight
 } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import ProfileEditDialog from '@/components/profile/editProfileDialog';
-import OverViewPage from '@/components/profile/overViewPage';
-import EventsPage from '@/components/profile/eventPage';
-import BrushPage from '@/components/profile/brushedPage';
-import BathPage from '@/components/profile/bathPage';
-import RunningPage from '@/components/profile/runningPage';
-import DidThatPage from '@/components/profile/didThatPage';
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -40,15 +29,15 @@ export default function ProfilePage() {
 
   const tabs = [
     { id: 'overview', icon: <User size={18} />, label: 'Overview' },
-    { id: 'event', icon: <Award size={18} />, label: 'Events' },
-    { id: 'brush', icon: <Droplet size={18} />, label: 'Brush' },
-    { id: 'bath', icon: <Activity size={18} />, label: 'Bath' },
-    { id: 'run', icon: <HeartPulse size={18} />, label: 'Running' },
-    { id: 'didThat', icon: <CheckCircle size={18} />, label: 'Did' },
+    { id: 'event', icon: <Star size={18} />, label: 'Events' },
+    { id: 'brush', icon: <CalendarArrowUp size={18} />, label: 'Brush' },
+    { id: 'bath', icon: <CalendarArrowUp size={18} />, label: 'Bath' },
+    { id: 'run', icon: <Goal size={18} />, label: 'Running' },
+    { id: 'doThat', icon: <CalendarDaysIcon size={18} />, label: 'Activities' },
   ];
 
   return (
-    <div className="w-full min-h-screen p-6">
+    <div className="w-full min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +45,7 @@ export default function ProfilePage() {
         className="max-w-6xl mx-auto"
       >
         {/* Profile Header */}
-        <div className="relative rounded-3xl bg-gradient-to-br from-gray-800/40 to-gray-900/50 border border-gray-700/50 shadow-xl overflow-hidden">
+        <div className="relative rounded-3xl bg-gradient-to-br from-gray-800/50 to-gray-900/70 border border-gray-700/50 shadow-xl overflow-hidden">
           {/* Decorative gradient background */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-purple-500/10 via-transparent to-blue-500/10 opacity-30"></div>
           
@@ -97,6 +86,14 @@ export default function ProfilePage() {
                     )}
                   </AnimatePresence>
                 </div>
+                <motion.div 
+                  className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium shadow-md"
+                  initial={{ y: 10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  @{userData.username || 'user'}
+                </motion.div>
               </motion.div>
 
               {/* Profile Details */}
@@ -109,6 +106,9 @@ export default function ProfilePage() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                   {userData.name || 'User Name'}
                 </h1>
+                <p className="text-gray-300 max-w-lg">
+                  {userData.bio || 'No bio added yet. Click edit to add your personal bio.'}
+                </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   <motion.div 
@@ -216,14 +216,33 @@ export default function ProfilePage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="mt-8 bg-gray-800/20 rounded-2xl border border-gray-700/50 p-6 backdrop-blur-sm"
+          className="mt-8 bg-gray-800/50 rounded-2xl border border-gray-700/50 p-6 backdrop-blur-sm"
         >
-          {activeTab === 'overview' && <OverViewPage />}
-          {activeTab === 'event' && <EventsPage />}
-          {activeTab === 'brush' && <BrushPage />}
-          {activeTab === 'bath' && <BathPage />}
-          {activeTab === 'run' && <RunningPage />}
-          {activeTab === 'didThat' && <DidThatPage />}
+          {activeTab === 'overview' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map(item => (
+                <motion.div
+                  key={item}
+                  whileHover={{ y: -5 }}
+                  className="bg-gray-800/70 hover:bg-gray-700/70 rounded-xl p-5 border border-gray-700/50 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-medium text-white">Activity {item}</h3>
+                    <div className="p-2 bg-purple-500/10 rounded-lg">
+                      <CalendarArrowUp className="text-purple-400" size={18} />
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-400">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="text-xs text-gray-500">2 days ago</span>
+                    <button className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1">
+                      View <ChevronRight size={14} />
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
           {activeTab !== 'overview' && (
             <div className="text-center py-12">
               <div className="mx-auto w-24 h-24 bg-gray-700/50 rounded-full flex items-center justify-center mb-4">
