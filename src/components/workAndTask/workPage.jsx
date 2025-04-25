@@ -9,7 +9,6 @@ import DetailAndDeleteTaskWork from "../dialog/detailDeleteTaskWorkDialog";
 import { useRouter } from "next/navigation";
 
 export const WorkPage = () => {
-    const [title, setTitle] = useState('');
     const [workArray, setWorkArray] = useState([]);
     const [mounted, setMounted] = useState(false);
     const [showUpdateDialog, setShowUpdateDialog] = useState({});
@@ -20,7 +19,10 @@ export const WorkPage = () => {
     const { workData } = useSelector((state) => state.work);
     const [CreateWork, { isLoading }] = useAddWorkMutation();
     const [ToggleCompleteWork] = useToggleCompleteWorkMutation();
-    const { data } = useGetWorkQuery();
+    const { data ,isError,error} = useGetWorkQuery();
+
+    console.log(isError,error);
+    
 
     useEffect(() => {
         setMounted(true);

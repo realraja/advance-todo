@@ -7,8 +7,8 @@ import User from "@/models/user";
 export const userTryCatch = (passedFunction) => async (req, context) => {
   try {
     await connectDB();
-    const User = await UserAuth(req);
-    if (!User) return ResponseFailed("Please Login First", { User });
+    const {User,data} = await UserAuth(req);
+    if (!User) return ResponseFailed("Please Login First", { User,data });
     req.user = User;
 
     return await passedFunction(req, context); // <== forward context (e.g. { params })
@@ -25,15 +25,16 @@ export const UserAuth = async (req) => {
   const cookieStore = await cookies(); // gets all cookies
   const cookie = cookieStore.get("token"); // replace with your actual cookie key
 
-  if (!cookie) return false;
+  if (!cookie) return {User:false,data:'cookie error'};
 
   //    const isVerified = jwt.verify(cookie.value,process.env.JWT_SECRET).password ===  process.env.ADMIN_PASSWORD
   const userEmail = verifyToken(cookie.value).email;
  
+  if (!userEmail) return {User:false,data:'user email not found from token'};
 
   const user = await User.findOne({email:userEmail});
 
-  if (!user) return false;
+  if (!user) return {User:false,data:'user Not Found'};
 
   if (user.tokenWeb !== cookie.value && user.tokenApp !== cookie.value) {
     await cookies().set({
@@ -42,8 +43,8 @@ export const UserAuth = async (req) => {
       httpOnly: true,
       maxAge: 0,
     });
-    return false;
+    return {User:false,data:'cookie not match'};
   }
 
-  return user;
+  return {User:user,data:'user get success'};
 };
