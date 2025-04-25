@@ -154,3 +154,79 @@ export const formatDateDisplay = (dateString) => {
         };
     }
 };
+
+
+   export const getDayDisplay = (dayString) => {
+        if (!dayString || dayString.toLowerCase() === 'anytime') {
+            return {
+                text: 'Anytime',
+                shortText: 'Any',
+                isToday: false,
+                isTomorrow: false
+            };
+        }
+
+        const today = new Date();
+        const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowDayName = tomorrow.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+
+        const inputDay = dayString.toLowerCase();
+
+        if (inputDay === todayDayName) {
+            return {
+                text: 'Today',
+                shortText: 'Today',
+                isToday: true,
+                isTomorrow: false
+            };
+        }
+
+        if (inputDay === tomorrowDayName) {
+            return {
+                text: 'Tomorrow',
+                shortText: 'Tmrw',
+                isToday: false,
+                isTomorrow: true
+            };
+        }
+
+        return {
+            text: `Do on: ${dayString}`,
+            shortText: dayString.slice(0, 3),
+            isToday: false,
+            isTomorrow: false
+        };
+    };
+
+
+  export  const getDayColor = (day, isToday = false, isTomorrow = false) => {
+        const dayLower = day.toLowerCase();
+    
+        // Priority for Today/Tomorrow
+        if (isToday) return 'bg-red-500/30 text-red-400 font-bold animate-pulse';
+        if (isTomorrow) return 'bg-orange-500/30 text-orange-400 font-semibold';
+    
+        // Specific day colors
+        switch (dayLower) {
+            case 'sunday':
+                return 'bg-red-500/20 text-red-400';
+            case 'monday':
+                return 'bg-blue-500/20 text-blue-400';
+            case 'tuesday':
+                return 'bg-purple-500/20 text-purple-400';
+            case 'wednesday':
+                return 'bg-green-500/20 text-green-400';
+            case 'thursday':
+                return 'bg-yellow-500/20 text-yellow-400';
+            case 'friday':
+                return 'bg-indigo-500/20 text-indigo-400';
+            case 'saturday':
+                return 'bg-pink-500/20 text-pink-400';
+            case 'anytime':
+                return 'bg-gray-600/20 text-gray-300';
+            default:
+                return 'bg-gray-500/20 text-gray-400';
+        }
+    };

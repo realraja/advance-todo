@@ -52,5 +52,14 @@ body::-webkit-scrollbar-thumb {
 }
 
 
+.scroll-wrapper:hover .scroll-arrow {
+  opacity: 1;
+}
+.scroll-arrow {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+
 
 

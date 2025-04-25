@@ -22,10 +22,7 @@ export default function AddEventDialog({
         setEventDate(e.target.value);
     };
 
-    const getMinDate = () => {
-        const today = new Date();
-        return today.toISOString().split('T')[0];
-    };
+
 
     const handleSubmit = async () => {
         if (!eventName.trim() || !eventDate) return;
@@ -154,7 +151,6 @@ export default function AddEventDialog({
                                                 className="w-full bg-gray-800/70 text-white mt-1 rounded-lg pl-10 pr-4 py-2.5 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                                 value={eventDate}
                                                 onChange={handleDateChange}
-                                                min={getMinDate()}
                                             />
                                             {!eventDate && (
                                                 <motion.span

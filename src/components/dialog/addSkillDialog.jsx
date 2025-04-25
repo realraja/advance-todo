@@ -10,6 +10,7 @@ import { useAddMutation, useUpdateLevelMutation } from '@/redux/api/skill';
 export default function AddSkillFormDialog({
     show,
     setShow,
+    onSuccess
 }) {
     const cancelRef = useRef(null);
     const [name, setName] = useState('');
@@ -52,6 +53,7 @@ export default function AddSkillFormDialog({
             currentLevel,
             image: imagePreview
         });
+        onSuccess()
     };
 
     const removeImage = () => {

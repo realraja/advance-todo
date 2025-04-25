@@ -8,7 +8,10 @@ import Task from "@/models/task";
 import User from "@/models/user";
 
 export const GET = userTryCatch(async (req, context) => {
-    const dateString = context?.params?.date;
+  
+  const params = await context.params;
+  const dateString = params.date; // "app" or "web"
+    // const dateString = context?.params?.date;
     if (!dateString) return failedResponse("Please provide valid date");
   
     const inputDate = new Date(dateString);
@@ -18,10 +21,12 @@ export const GET = userTryCatch(async (req, context) => {
   
     const startOfDay = new Date(inputDate.setHours(0, 0, 0, 0));
     const endOfDay = new Date(inputDate.setHours(23, 59, 59, 999));
+    const Later10Day = new Date(inputDate.setDate(inputDate.getDate() + 10));
     const dayName = startOfDay.toLocaleString("en-US", { weekday: "long" }).toLowerCase();
     const formattedDate = inputDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
   
     // Fetch user once and select all needed fields
+    // console.log(Later7Day);
   
     // Habit check helper
     const checkDateMatch = (arr) =>
@@ -79,8 +84,22 @@ export const GET = userTryCatch(async (req, context) => {
     const isBathed = checkDateMatch(user.bathed);
     const isRunning = checkDateMatch(user.running);
     const isDidThat = checkDateMatch(user.didThat);
+
+    const getMonthDay = (date) => {
+      const d = new Date(date);
+      return new Date(`${d.getMonth()}-${d.getDate()}`);
+    };
+    
+    const start = getMonthDay(startOfDay);
+    const end = getMonthDay(Later10Day);
+    
+    const event = user.importantEvents.filter(i => {
+      const md = getMonthDay(i.date);
+      return start <= md && md <= end;
+    });
   
     return successResponse("Data fetched successfully", {
+      event,
       goal,
       task,
       work,
@@ -91,6 +110,5 @@ export const GET = userTryCatch(async (req, context) => {
       isBathed,
       isRunning,
       isDidThat,
-      user,
     });
   })

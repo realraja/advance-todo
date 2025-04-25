@@ -14,6 +14,7 @@ import photoApi from "./api/photo";
 import skillApi from "./api/skill";
 import userApi from "./api/user";
 import goalApi from "./api/goal";
+import calendarApi from "./api/calendar";
 
 const store = configureStore({
   reducer: {
@@ -32,6 +33,7 @@ const store = configureStore({
     [photoApi.reducerPath]: photoApi.reducer,
     [skillApi.reducerPath]: skillApi.reducer,
     [userApi.reducerPath]: userApi.reducer,
+    [calendarApi.reducerPath]: calendarApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -47,7 +49,8 @@ const store = configureStore({
       photoApi.middleware,
       skillApi.middleware,
       goalApi.middleware,
-      userApi.middleware
+      userApi.middleware,
+      calendarApi.middleware
     ),
 });
 

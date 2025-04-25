@@ -12,7 +12,8 @@ const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'fri
 
 export default function UpdateTaskWorkFormDialog({
   showData,
-  setShowData
+  setShowData,
+  onSuccess
 }) {
   const cancelRef = useRef(null);
   const [title, setTitle] = useState('');
@@ -84,6 +85,7 @@ export default function UpdateTaskWorkFormDialog({
       });
     }
     setShowData(false);
+    onSuccess();
   };
 
   const handleDateChange = (e) => {

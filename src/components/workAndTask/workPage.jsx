@@ -7,6 +7,7 @@ import UpdateTaskWorkFormDialog from "../dialog/updateTaskWork";
 import { motion, AnimatePresence } from "framer-motion";
 import DetailAndDeleteTaskWork from "../dialog/detailDeleteTaskWorkDialog";
 import { useRouter } from "next/navigation";
+import { getDayDisplay } from "@/utils/dateFormats";
 
 export const WorkPage = () => {
     const [workArray, setWorkArray] = useState([]);
@@ -50,49 +51,7 @@ export const WorkPage = () => {
         await ToggleCompleteWork(id);
     };
 
-    const getDayDisplay = (dayString) => {
-        if (!dayString || dayString.toLowerCase() === 'anytime') {
-            return {
-                text: 'Anytime',
-                shortText: 'Any',
-                isToday: false,
-                isTomorrow: false
-            };
-        }
 
-        const today = new Date();
-        const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowDayName = tomorrow.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-
-        const inputDay = dayString.toLowerCase();
-
-        if (inputDay === todayDayName) {
-            return {
-                text: 'Today',
-                shortText: 'Today',
-                isToday: true,
-                isTomorrow: false
-            };
-        }
-
-        if (inputDay === tomorrowDayName) {
-            return {
-                text: 'Tomorrow',
-                shortText: 'Tmrw',
-                isToday: false,
-                isTomorrow: true
-            };
-        }
-
-        return {
-            text: `Do on: ${dayString}`,
-            shortText: dayString.slice(0, 3),
-            isToday: false,
-            isTomorrow: false
-        };
-    };
 
     const handleShowMore = () => {
         setExpanded(!expanded);
@@ -442,4 +401,4 @@ const WorkLoader = () => (
         <div className="size-5 bg-gray-700 rounded animate-pulse"></div>
         <div className="size-5 bg-gray-700 rounded animate-pulse"></div>
     </div>
-);
+); 
