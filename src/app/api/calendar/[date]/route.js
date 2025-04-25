@@ -21,12 +21,11 @@ export const GET = userTryCatch(async (req, context) => {
   
     const startOfDay = new Date(inputDate.setHours(0, 0, 0, 0));
     const endOfDay = new Date(inputDate.setHours(23, 59, 59, 999));
-    const Later10Day = new Date(inputDate.setDate(inputDate.getDate() + 10));
     const dayName = startOfDay.toLocaleString("en-US", { weekday: "long" }).toLowerCase();
     const formattedDate = inputDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
+    const Later10Day = new Date(inputDate.setDate(inputDate.getDate() + 10));
   
     // Fetch user once and select all needed fields
-    // console.log(Later7Day);
   
     // Habit check helper
     const checkDateMatch = (arr) =>
@@ -78,25 +77,24 @@ export const GET = userTryCatch(async (req, context) => {
     
     // Fetch everything in parallel
     const [user,task, work, goal, diary, movie, skill] = await Promise.all(GetDataArray);
+
+    const event = user.importantEvents.filter(i => {
+      const getMonthDay = (date) => {
+        const d = new Date(date);
+        return new Date(`${d.getMonth()}-${d.getDate()}`);
+      };
+      
+      const start = getMonthDay(startOfDay);
+      const end = getMonthDay(Later10Day);
+      const md = getMonthDay(i.date);
+      return start <= md && md <= end;
+    });
   
   
     const isBrushed = checkDateMatch(user.brushed);
     const isBathed = checkDateMatch(user.bathed);
     const isRunning = checkDateMatch(user.running);
     const isDidThat = checkDateMatch(user.didThat);
-
-    const getMonthDay = (date) => {
-      const d = new Date(date);
-      return new Date(`${d.getMonth()}-${d.getDate()}`);
-    };
-    
-    const start = getMonthDay(startOfDay);
-    const end = getMonthDay(Later10Day);
-    
-    const event = user.importantEvents.filter(i => {
-      const md = getMonthDay(i.date);
-      return start <= md && md <= end;
-    });
   
     return successResponse("Data fetched successfully", {
       event,
@@ -109,6 +107,6 @@ export const GET = userTryCatch(async (req, context) => {
       isBrushed,
       isBathed,
       isRunning,
-      isDidThat,
+      isDidThat
     });
   })
