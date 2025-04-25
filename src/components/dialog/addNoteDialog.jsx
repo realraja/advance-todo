@@ -70,57 +70,39 @@ export default function AddNoteFormDialog({
     };
 
 
-    const handleSubmit = async () => {
-        if (!name.trim() || filePreviews.length === 0) return;
-        
-        setIsSubmitting(true);
-        
-        try {
-          const formData = new FormData();
-          formData.append('name', name);
-          formData.append('isSecure', isSecure.toString());
-          
-          // Append each file to FormData
-          filePreviews.forEach((fileObj) => {
-            formData.append('files', fileObj.file);
-          });
-      
-          const response = await fetch('/api/photo/upload-files', {
-            method: 'POST',
-            body: formData,
-          });
-      
-          if (!response.ok) {
-            throw new Error('Upload failed');
-          }
-      
-          await refetch();
-          setShow(false);
-          setName('');
-          setIsSecure(false);
-          setFilePreviews([]);
-        } catch (error) {
-          console.error('Upload error:', error);
-          // Handle error (show toast, etc.)
-        } finally {
-          setIsSubmitting(false);
-        }
-      };
-
     // const handleSubmit = async () => {
-    //     if (!title.trim()) return;
-    //     if (!content.trim()) return;
+    //     if (!name.trim() || filePreviews.length === 0) return;
+        
+    //     setIsSubmitting(true);
+        
+    //     try {
+          
+          
+    //   await createNote({
+    //     title, images:imagePreviews, forDate:date, content,type
+    //   })
+    //     } catch (error) {
+    //       console.error('Upload error:', error);
+    //       // Handle error (show toast, etc.)
+    //     } finally {
+    //       setIsSubmitting(false);
+    //     }
+    //   };
 
-    //     setShow(false);
-    //     await createNote('Creating Note...', {
-    //         type,
-    //         title,
-    //         content,
-    //         forDate:date,
-    //         images: imagePreviews,
-    //         files: filePreviews
-    //     });
-    // };
+    const handleSubmit = async () => {
+        if (!title.trim()) return;
+        if (!content.trim()) return;
+
+        setShow(false);
+        await createNote('Creating Note...', {
+            type,
+            title,
+            content,
+            forDate:date,
+            images: imagePreviews,
+            files: filePreviews
+        });
+    };
 
     const handleDateChange = (e) => {
         const selectedDate = new Date(e.target.value);
