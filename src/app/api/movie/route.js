@@ -9,3 +9,4 @@ export const GET = userTryCatch(async (req) => {
     .sort({ createdAt: -1 })
   return successResponse("movie fetch successfully", { movie });
 });
+ 
