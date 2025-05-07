@@ -42,13 +42,14 @@ export default function Header() {
                                     whileHover={{ scale: 1.05 }}
                                     className="flex flex-shrink-0 items-center cursor-pointer"
                                 >
-                                  <Link herf='/'>
+                                  <Link href='/'>
                                   
                                     <img
                                         className="h-16 w-auto"
                                         src={appLogoImg}
                                         alt="Your Company"
-                                    /></Link>
+                                    />
+                                  </Link>
                                 </motion.div>
 
                                 <DesktopNavigation />
