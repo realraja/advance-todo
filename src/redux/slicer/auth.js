@@ -5,9 +5,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const authSlicer = createSlice({
   name: "auth",
   initialState: {
-    isUser:  getOrSaveLocalStorage({key:IS_USER_LOGGED_IN,get:true}) ||false,
-    userId: getOrSaveLocalStorage({key:USER_ID,get:true}) ||null,
-    userData:  getOrSaveLocalStorage({key:USER_DATA,get:true}) ||{},
+    isUser:  false,
+    userId: null,
+    userData: {},
     loading:true,
     isAdmin:false,
   },
