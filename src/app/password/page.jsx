@@ -29,19 +29,12 @@ const PasswordPage = () => {
   const [ToggleSecure] = useSecurePasswordMutation();
   const [ToggleDelete] = useDeleteMutation();
 
-  // console.log(data);
-
   useEffect(() => {
     if (data) setPasswords(data.data.password);
   }, [data]);
 
   const handleGetPassword = async (password) => {
-
-
-    // console.log(password?.EnteredPassword)
     if (!revealedPasswords[password._id]) {
-      // if (password.isSecure) return toast.error('This password is secured');
-
       const toastId = toast.loading('Decrypting password...');
       try {
         const res = await getPassword({ id: password._id,userPassword:password?.EnteredPassword });
@@ -49,7 +42,6 @@ const PasswordPage = () => {
           setRevealedPasswords(prev => ({ ...prev, [password._id]: res.data.data.password }));
           toast.success('Password revealed!', { id: toastId });
         } else {
-          console.log(res.error)
           toast.error('Failed to decrypt password', { id: toastId });
         }
       } catch {
@@ -80,24 +72,22 @@ const PasswordPage = () => {
 
   const handleToggleSecurePassword = async (pass) => {
     const toastId = toast.loading(!pass.isSecure?'Securing Password...':'Security Removing...')
-      const data = await ToggleSecure(pass._id);
+    const data = await ToggleSecure(pass._id);
     if(data?.data){
       toast.success(data.data.message,{id:toastId});
     }else{
       toast.error(data?.error?.data?.message,{id:toastId})
     }
-    
   }
+
   const handleToggleDeletePassword = async (pass) => {
     const toastId = toast.loading(!pass.isDeleted?'Password Deleting...':'password Restoring...')
-      const data = await await ToggleDelete(pass._id);;
-      console.log(data)
+    const data = await ToggleDelete(pass._id);
     if(data?.data){
       toast.success(data.data.message,{id:toastId});
     }else{
       toast.error(data?.error?.data?.message,{id:toastId})
     }
-    
   }
 
   const filteredPasswords = passwords.filter(p => {
@@ -109,45 +99,41 @@ const PasswordPage = () => {
   if(!isUser) return <PasswordGeneratorGuide />
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-950 text-white p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
-          <motion.h1 initial={{ y: -20 }} animate={{ y: 0 }} className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
             Password Vault
-          </motion.h1>
-          <motion.button
+          </h1>
+          <button
             onClick={() => setShowAddPassword(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 rounded-lg shadow-lg"
           >
             <Plus size={20} /> Add Password
-          </motion.button>
+          </button>
         </div>
 
         {/* Tabs */}
-        <motion.div className="flex border-b border-gray-700 mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <div className="flex border-b border-gray-700 mb-6">
           {[
             { id: 'password', icon: Globe, label: 'Passwords' },
             { id: 'secured', icon: Lock, label: 'Secured' },
             { id: 'deleted', icon: Trash2, label: 'Deleted' }
           ].map((tab) => (
-            <motion.button
+            <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 font-medium flex items-center gap-2 relative ${activeTab === tab.id ? 'text-white' : 'text-gray-400 hover:text-gray-300'}`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
             >
               <tab.icon size={16} />
               {tab.label}
               {activeTab === tab.id && (
-                <motion.div layoutId="tabIndicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />
               )}
-            </motion.button>
+            </button>
           ))}
-        </motion.div>
+        </div>
 
         {/* Passwords Grid */}
         <PasswordGride
@@ -163,10 +149,7 @@ const PasswordPage = () => {
       {/* Context Menu */}
       <AnimatePresence>
         {contextMenu.show && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
+          <div
             className="fixed bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 py-1"
             style={{ top: contextMenu.y, left: contextMenu.x, minWidth: '180px' }}
             onClick={closeContextMenu}
@@ -180,14 +163,14 @@ const PasswordPage = () => {
               {contextMenu.password?.isDeleted ? <Undo2 size={14} /> : <Trash2 size={14} />}
               {contextMenu.password?.isDeleted ? 'Restore' : 'Delete'}
             </button>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
       {contextMenu.show && <div className="fixed inset-0 z-40" onClick={closeContextMenu} />}
 
       {showAddPassword && <AddPasswordDialog show={showAddPassword} setShow={setShowAddPassword} />}
       <EditPasswordDialog showData={showEditPassword} setShowData={setShowEditPassword} />
-    </motion.div>
+    </div>
   );
 };
 
@@ -195,75 +178,58 @@ export default PasswordPage;
 
 const PasswordGride = ({ filteredPasswords, activeTab, handleContextMenu, handleGetPassword, revealedPasswords, copyToClipboard }) => {
   const [showEnterPasswordDialog, setShowEnterPasswordDialog] = useState({})
-  const passwordVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.3 }
-    },
-    hover: {
-      y: -5,
-      boxShadow: "0 10px 25px -5px rgba(124, 58, 237, 0.1)"
-    }
-  };
 
   const handleShowPassword = (password) => {
     if(password.isSecure && !revealedPasswords[password._id]) return setShowEnterPasswordDialog(password)
-
     handleGetPassword(password)
   }
 
   return (
     <div>
       {filteredPasswords.length === 0 ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center text-gray-500 py-20">
+        <div className="text-center text-gray-500 py-20">
           No {activeTab} passwords found
-        </motion.div>
+        </div>
       ) : (
-        <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
-          <AnimatePresence>
-            {filteredPasswords.map((password) => (
-              <motion.div
-                key={password._id}
-                variants={passwordVariants}
-                whileHover="hover"
-                onContextMenu={(e) => handleContextMenu(e, password)}
-                className={`bg-gray-800/50 border rounded-xl p-4 shadow-lg transition-all relative group ${password.isDeleted ? 'border-red-500/30' : 'border-gray-700'}`}
-              >
-                {password.isDeleted && (
-                  <div className="absolute top-2 right-2 bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                    <Trash2 size={12} /> Deleted
-                  </div>
-                )}
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-bold text-lg truncate">{password.name}</h3>
-                    <div className="flex items-center gap-1 mt-1">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${password.isSecure ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                        {password.isSecure ? 'Secured' : 'Public'}
-                      </span>
-                    </div>
-                  </div>
-                  <button onClick={() => handleShowPassword(password)} className="p-1.5 rounded-full bg-gray-700 hover:bg-gray-600">
-                    {revealedPasswords[password._id] ? <EyeOff size={16} className="text-blue-400" /> : <Eye size={16} className="text-gray-400" />}
-                  </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPasswords.map((password) => (
+            <div
+              key={password._id}
+              onContextMenu={(e) => handleContextMenu(e, password)}
+              className={`bg-gray-800/50 border rounded-xl p-4 shadow-lg relative group ${password.isDeleted ? 'border-red-500/30' : 'border-gray-700'}`}
+            >
+              {password.isDeleted && (
+                <div className="absolute top-2 right-2 bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                  <Trash2 size={12} /> Deleted
                 </div>
+              )}
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="font-bold text-lg truncate">{password.name}</h3>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${password.isSecure ? 'bg-purple-500/20 text-purple-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                      {password.isSecure ? 'Secured' : 'Public'}
+                    </span>
+                  </div>
+                </div>
+                <button onClick={() => handleShowPassword(password)} className="p-1.5 rounded-full bg-gray-700 hover:bg-gray-600">
+                  {revealedPasswords[password._id] ? <EyeOff size={16} className="text-blue-400" /> : <Eye size={16} className="text-gray-400" />}
+                </button>
+              </div>
 
-                <div className="space-y-3">
-                  <InfoLine label="URL" value={password.url} onCopy={() => copyToClipboard(password.url)} />
-                  <InfoLine label="Username" value={password.username} onCopy={() => copyToClipboard(password.username)} />
-                  <InfoLine
-                    label="Password"
-                    value={revealedPasswords[password._id] || '••••••••'}
-                    onCopy={() => copyToClipboard(revealedPasswords[password._id])}
-                    disabled={!revealedPasswords[password._id]}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+              <div className="space-y-3">
+                <InfoLine label="URL" value={password.url} onCopy={() => copyToClipboard(password.url)} />
+                <InfoLine label="Username" value={password.username} onCopy={() => copyToClipboard(password.username)} />
+                <InfoLine
+                  label="Password"
+                  value={revealedPasswords[password._id] || '••••••••'}
+                  onCopy={() => copyToClipboard(revealedPasswords[password._id])}
+                  disabled={!revealedPasswords[password._id]}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       <PasswordInputDialog showData={showEnterPasswordDialog} setShowData={setShowEnterPasswordDialog} onSubmit={handleGetPassword} />
@@ -272,9 +238,6 @@ const PasswordGride = ({ filteredPasswords, activeTab, handleContextMenu, handle
 };
 
 const InfoLine = ({ label, value, onCopy, disabled }) => {
-
-  // console.log(label, value)
-
   return (
     <div className="flex items-center justify-between">
       <span className="text-sm text-gray-400">{label}:</span>
