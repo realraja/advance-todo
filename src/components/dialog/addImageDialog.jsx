@@ -28,7 +28,8 @@ export default function SingleFileUploadDialog({
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // console.log()
+        // console.log(file.name)
+        if(!name) setName(file.name);
 
         if((file.size / 1024).toFixed(1) > 9900 && file.type.split('/')[0] !== 'video') return toast.error('File must Less than 10 MB')
         if((file.size / 1024).toFixed(1) > 99000) return toast.error('File must Less than 10 MB')

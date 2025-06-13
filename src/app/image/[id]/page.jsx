@@ -187,13 +187,14 @@ export default function FolderInnerPage() {
                                 {(() => {
                                     const url = file.imgUrl;
                                     const extension = url?.split('.').pop()?.toLowerCase();
+                                    // console.log(['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(extension))
 
-                                    if (url?.includes('/image/') || ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(extension)) {
+                                    if ( ['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(extension)) {
                                         return (
                                             <div className="relative aspect-video bg-gray-700 rounded-lg overflow-hidden">
                                                 <img
                                                     src={url}
-                                                    alt={file.name}
+                                                    alt={'file.name'}
                                                     className="w-full h-full object-cover"
                                                     loading="lazy"
                                                 />

@@ -2,7 +2,7 @@
 const cloudinary = require('cloudinary').v2;
 
 
-const folderName = process.env.DB_URL | "Todo App"; // Set your folder name here
+const folderName = process.env.DB_NAME || "Todo App"; // Set your folder name here
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -83,3 +83,37 @@ export const uploadFileResponse = async (files) => {
     throw new Error(`File upload failed: ${error.message}`);
   }
 };
+
+
+
+const mimeToExtension = {
+  "application/pdf": "pdf",
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "video/mp4": "mp4",
+  "audio/mpeg": "mp3",
+  "audio/wav": "wav",
+  "video/webm": "webm",
+  // Add more as needed
+};
+
+export const getFileInfoFromBase64 = (base64) => {
+  const matches = base64.match(/^data:(.*);base64,/);
+  if (!matches || matches.length < 2) {
+    throw new Error("Invalid base64 file string");
+  }
+
+  const mimeType = matches[1];
+  const extension = mimeToExtension[mimeType] || "bin"; // fallback
+  let resource_type = "raw";
+
+  if (mimeType.startsWith("image/")) resource_type = "image";
+  else if (mimeType.startsWith("video/") || mimeType.startsWith("audio/"))
+    resource_type = "video";
+
+  return { mimeType, extension, resource_type };
+};
+
+
