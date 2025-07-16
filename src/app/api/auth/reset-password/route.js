@@ -16,7 +16,7 @@ export async function POST(req) {
       return failedResponse("Email and Token are required");
     }
 
-    const {email,checkToken} = verifyToken(token);
+    const {email,token:checkToken} = verifyToken(token);
 
 
 

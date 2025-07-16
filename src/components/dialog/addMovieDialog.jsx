@@ -3,7 +3,7 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, ChevronDown, ChevronUp, Star, Clapperboard, Tv, Check, Upload, Image as ImageIcon, CalendarIcon, Film, Trash2 } from 'lucide-react';
+import { X, Calendar, Star, Clapperboard, Tv, Check, Upload, Image as ImageIcon, CalendarIcon, Film, Trash2 } from 'lucide-react';
 import classNames from 'classnames';
 import dayjs from 'dayjs';
 import { useAsyncMutation } from '@/hook/mutationHook';
@@ -51,7 +51,7 @@ export default function AddMovieDialog({
         const today = new Date();
         return today.toISOString().split('T')[0];
     };
-
+ 
     const formatDateDisplay = (dateStr) => {
         const date = new Date(dateStr);
         return dayjs(date).format("MMM D, YYYY");

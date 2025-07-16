@@ -5,7 +5,7 @@ import { signToken } from "@/lib/jwt";
 import { errorResponse, failedResponse, successResponse } from "@/middleware/response";
 import { setCookie } from "@/middleware/cookie";
 import { uploadResponse } from "@/lib/cloudinary";
-
+ 
 export async function POST(req) {
   await connectDB();
 
@@ -69,7 +69,7 @@ export async function POST(req) {
 
     return res;
   } catch (err) {
-    console.error("Register Error:", err);
+    console.log("Register Error:", err);
     return errorResponse("Registration failed",err);
   }
 }
